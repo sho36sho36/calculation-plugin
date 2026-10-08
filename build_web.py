@@ -1,157 +1,112 @@
 import os
 import json
-import sys
-
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-PLUGIN_DIR = os.path.join(
-    ROOT_DIR,
-    "plugins"
-)
-
-DOCS_DIR = os.path.join(
-    ROOT_DIR,
-    "docs"
-)
+PLUGIN_DIR = os.path.join(ROOT_DIR, "plugins")
+DOCS_DIR = os.path.join(ROOT_DIR, "docs")
 
 
 def load_plugins():
-
     plugins = []
 
-    if not os.path.exists(PLUGIN_DIR):
-        return plugins
-
     for filename in sorted(os.listdir(PLUGIN_DIR)):
-
         if not filename.endswith(".py"):
             continue
 
         if filename == "__init__.py":
             continue
 
-        path = os.path.join(
-            PLUGIN_DIR,
-            filename
-        )
+        path = os.path.join(PLUGIN_DIR, filename)
 
-        with open(
-            path,
-            "r",
-            encoding="utf-8"
-        ) as f:
-
+        with open(path, "r", encoding="utf-8") as f:
             source = f.read()
+
+        name = filename
+        description = "このプラグインの説明はありません。"
+
+        # PLUGIN_NAME を取得
+        for line in source.splitlines():
+            line = line.strip()
+
+            if line.startswith("PLUGIN_NAME"):
+                try:
+                    name = line.split("=", 1)[1].strip().strip('"\'')
+                except Exception:
+                    pass
+
+            if line.startswith("PLUGIN_DESCRIPTION"):
+                try:
+                    description = line.split("=", 1)[1].strip().strip('"\'')
+                except Exception:
+                    pass
 
         plugins.append({
             "filename": filename,
+            "name": name,
+            "description": description,
             "source": source
         })
 
     return plugins
 
 
-def create_docs():
-
-    os.makedirs(
-        DOCS_DIR,
-        exist_ok=True
-    )
-
-    plugins = load_plugins()
-
-    print(
-        f"{len(plugins)}個のプラグインを検出しました。"
-    )
-
-    for plugin in plugins:
-
-        print(
-            f"  - {plugin['filename']}"
-        )
-
-    create_html(plugins)
-    create_css()
-    create_js(plugins)
-
-    print()
-    print("Web版を生成しました。")
-    print()
-    print(
-        f"出力先: {DOCS_DIR}"
-    )
-
-
-def create_html(plugins):
-
-    html = """<!DOCTYPE html>
+def create_html():
+    return """<!DOCTYPE html>
 <html lang="ja">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>Calculation Plugin</title>
 
-    <title>計算プラグイン</title>
-
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div class="container">
 
-    <h1>計算プラグイン</h1>
+    <h1>🧮 Calculation Plugin</h1>
 
-    <div id="status">
-        Pythonを読み込んでいます...
-    </div>
+    <div class="card">
 
-    <section>
+        <label for="pluginSelect">計算プラグイン</label>
 
-        <label for="plugin">
-            プラグイン
-        </label>
+        <select id="pluginSelect"></select>
 
-        <select id="plugin">
-        </select>
+        <div id="description" class="description"></div>
 
-    </section>
-
-    <section>
-
-        <label for="input">
-            数値
-        </label>
+        <label for="inputValue">数値</label>
 
         <input
-            id="input"
+            id="inputValue"
             type="text"
             inputmode="numeric"
             placeholder="数値を入力"
         >
 
-    </section>
+        <button id="calculateButton">
+            計算する
+        </button>
 
-    <button
-        id="calculate"
-        disabled
-    >
-        計算
-    </button>
+        <div id="progressArea" class="progress-area">
 
-    <section>
+            <div class="progress-text">
+                <span id="progressMessage">計算中...</span>
+                <span id="progressPercent">0%</span>
+            </div>
 
-        <label>
-            結果
-        </label>
+            <div class="progress-bar">
+                <div id="progressBar"></div>
+            </div>
+
+        </div>
+
+        <div id="errorArea" class="error-area">
+        </div>
+
+        <label for="result">結果</label>
 
         <textarea
             id="result"
@@ -159,44 +114,28 @@ def create_html(plugins):
             placeholder="ここに結果が表示されます"
         ></textarea>
 
-    </section>
+        <button id="copyButton" class="copy-button">
+            結果をコピー
+        </button>
 
-    <button
-        id="copy"
-        disabled
-    >
-        コピー
-    </button>
+        <div id="status" class="status">
+            Pythonを準備しています...
+        </div>
 
-    <div id="message"></div>
+    </div>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/pyodide/v0.28.2/full/pyodide.js"></script>
-
 <script src="app.js"></script>
 
 </body>
 </html>
 """
 
-    path = os.path.join(
-        DOCS_DIR,
-        "index.html"
-    )
-
-    with open(
-        path,
-        "w",
-        encoding="utf-8"
-    ) as f:
-
-        f.write(html)
-
 
 def create_css():
-
-    css = r"""
+    return """
 * {
     box-sizing: border-box;
 }
@@ -205,63 +144,41 @@ body {
     margin: 0;
     padding: 20px;
 
-    background: #f5f5f5;
-
     font-family:
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
         sans-serif;
+
+    background: #f4f6f8;
+    color: #222;
 }
 
 .container {
     width: 100%;
-    max-width: 600px;
-
+    max-width: 700px;
     margin: 0 auto;
-
-    background: white;
-
-    padding: 24px;
-
-    border-radius: 16px;
-
-    box-shadow:
-        0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 h1 {
-    margin-top: 0;
-
     text-align: center;
-
-    font-size: 28px;
+    margin-bottom: 25px;
 }
 
-#status {
-    padding: 12px;
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
 
-    margin-bottom: 20px;
-
-    border-radius: 8px;
-
-    background: #eeeeee;
-
-    text-align: center;
-
-    font-size: 14px;
-}
-
-section {
-    margin-bottom: 18px;
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.08);
 }
 
 label {
     display: block;
-
-    margin-bottom: 8px;
-
     font-weight: bold;
+    margin-top: 18px;
+    margin-bottom: 8px;
 }
 
 select,
@@ -269,10 +186,9 @@ input,
 textarea {
     width: 100%;
 
-    padding: 14px;
+    padding: 13px;
 
-    border: 1px solid #cccccc;
-
+    border: 1px solid #ccc;
     border-radius: 10px;
 
     font-size: 16px;
@@ -280,62 +196,131 @@ textarea {
     background: white;
 }
 
-textarea {
-    min-height: 160px;
+select,
+input {
+    min-height: 48px;
+}
 
-    resize: vertical;
+.description {
+    margin-top: 10px;
+    padding: 12px;
 
-    font-family: monospace;
+    border-radius: 10px;
+
+    background: #f0f4f8;
+
+    color: #555;
+
+    line-height: 1.6;
 }
 
 button {
     width: 100%;
 
-    padding: 14px;
+    min-height: 50px;
 
-    margin-bottom: 12px;
+    margin-top: 18px;
 
     border: none;
-
     border-radius: 10px;
 
-    background: #222;
-
-    color: white;
-
     font-size: 17px;
-
     font-weight: bold;
 
     cursor: pointer;
+
+    background: #222;
+    color: white;
 }
 
 button:disabled {
-    opacity: 0.45;
-
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
-#message {
-    min-height: 24px;
+.copy-button {
+    background: #555;
+}
 
-    margin-top: 8px;
+textarea {
+    min-height: 160px;
+    resize: vertical;
 
-    text-align: center;
+    font-family: monospace;
+}
+
+.progress-area {
+    display: none;
+
+    margin-top: 20px;
+}
+
+.progress-text {
+    display: flex;
+    justify-content: space-between;
+
+    margin-bottom: 7px;
 
     font-size: 14px;
 }
 
-@media (max-width: 480px) {
+.progress-bar {
+    width: 100%;
+    height: 18px;
+
+    background: #ddd;
+
+    border-radius: 999px;
+
+    overflow: hidden;
+}
+
+#progressBar {
+    width: 0%;
+    height: 100%;
+
+    background: #222;
+
+    transition: width 0.15s;
+}
+
+.error-area {
+    display: none;
+
+    margin-top: 18px;
+
+    padding: 14px;
+
+    border-radius: 10px;
+
+    background: #fff0f0;
+
+    border: 1px solid #ffb0b0;
+
+    color: #c00000;
+
+    white-space: pre-wrap;
+}
+
+.status {
+    margin-top: 15px;
+
+    text-align: center;
+
+    color: #777;
+
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
 
     body {
         padding: 10px;
     }
 
-    .container {
+    .card {
         padding: 18px;
-
-        border-radius: 12px;
+        border-radius: 14px;
     }
 
     h1 {
@@ -343,89 +328,126 @@ button:disabled {
     }
 
     textarea {
-        min-height: 130px;
+        min-height: 180px;
     }
 }
 """
 
-    path = os.path.join(
-        DOCS_DIR,
-        "style.css"
-    )
-
-    with open(
-        path,
-        "w",
-        encoding="utf-8"
-    ) as f:
-
-        f.write(css)
-
 
 def create_js(plugins):
-
-    plugin_data = json.dumps(
+    plugin_json = json.dumps(
         plugins,
         ensure_ascii=False
     )
 
-    js = f"""
-const PLUGINS = {plugin_data};
+    return f"""
+const PLUGINS = {plugin_json};
 
 let pyodide = null;
-let ready = false;
 
+const pluginSelect =
+    document.getElementById("pluginSelect");
 
-const statusElement =
-    document.getElementById("status");
+const description =
+    document.getElementById("description");
 
-const pluginElement =
-    document.getElementById("plugin");
-
-const inputElement =
-    document.getElementById("input");
-
-const resultElement =
-    document.getElementById("result");
+const inputValue =
+    document.getElementById("inputValue");
 
 const calculateButton =
-    document.getElementById("calculate");
+    document.getElementById("calculateButton");
+
+const result =
+    document.getElementById("result");
 
 const copyButton =
-    document.getElementById("copy");
+    document.getElementById("copyButton");
 
-const messageElement =
-    document.getElementById("message");
+const status =
+    document.getElementById("status");
 
+const progressArea =
+    document.getElementById("progressArea");
 
-function showMessage(text) {{
+const progressBar =
+    document.getElementById("progressBar");
 
-    messageElement.textContent = text;
+const progressPercent =
+    document.getElementById("progressPercent");
 
-}}
+const progressMessage =
+    document.getElementById("progressMessage");
+
+const errorArea =
+    document.getElementById("errorArea");
 
 
 function setupPlugins() {{
 
-    pluginElement.innerHTML = "";
+    pluginSelect.innerHTML = "";
 
-    for (
-        let i = 0;
-        i < PLUGINS.length;
-        i++
-    ) {{
+    PLUGINS.forEach((plugin, index) => {{
 
         const option =
             document.createElement("option");
 
-        option.value = i;
+        option.value = index;
 
-        option.textContent =
-            PLUGINS[i].filename;
+        option.textContent = plugin.name;
 
-        pluginElement.appendChild(option);
+        pluginSelect.appendChild(option);
+    }});
+
+    updateDescription();
+}}
+
+
+function updateDescription() {{
+
+    const plugin =
+        PLUGINS[pluginSelect.value];
+
+    if (!plugin) {{
+        description.textContent = "";
+        return;
     }}
 
+    description.textContent =
+        plugin.description;
+}}
+
+
+function setProgress(percent, message) {{
+
+    percent = Math.max(0, Math.min(100, percent));
+
+    progressBar.style.width =
+        percent + "%";
+
+    progressPercent.textContent =
+        Math.round(percent) + "%";
+
+    progressMessage.textContent =
+        message;
+}}
+
+
+function showError(message) {{
+
+    errorArea.textContent =
+        "⚠ " + message;
+
+    errorArea.style.display =
+        "block";
+}}
+
+
+function hideError() {{
+
+    errorArea.textContent = "";
+
+    errorArea.style.display =
+        "none";
 }}
 
 
@@ -433,209 +455,268 @@ async function loadPython() {{
 
     try {{
 
-        statusElement.textContent =
-            "Pythonを読み込んでいます...";
+        setProgress(10, "Pythonを読み込んでいます...");
 
-        pyodide = await loadPyodide();
+        pyodide =
+            await loadPyodide();
 
-        // 巨大整数の文字列変換制限を解除
+        setProgress(70, "Pythonを準備しています...");
+
         await pyodide.runPythonAsync(`
 import sys
 sys.set_int_max_str_digits(0)
 `);
 
-        setupPlugins();
+        setProgress(100, "準備完了");
 
-        ready = true;
-
-        calculateButton.disabled = false;
-
-        statusElement.textContent =
+        status.textContent =
             "Python準備完了";
+
+        progressArea.style.display =
+            "none";
+
+        calculateButton.disabled =
+            false;
 
     }} catch (error) {{
 
-        console.error(error);
-
-        statusElement.textContent =
-            "Pythonの読み込みに失敗しました";
-
-        showMessage(
-            error.toString()
+        showError(
+            "Pythonの読み込みに失敗しました。\\n"
+            + error
         );
-    }}
 
+        status.textContent =
+            "Pythonの準備に失敗しました。";
+
+    }}
 }}
 
 
 async function calculate() {{
 
-    if (!ready) {{
-        return;
-    }}
+    hideError();
 
-    const input =
-        inputElement.value.trim();
-
-    if (input === "") {{
-
-        showMessage(
-            "数値を入力してください。"
-        );
-
-        return;
-    }}
-
-    const index =
-        Number(pluginElement.value);
+    result.value = "";
 
     const plugin =
-        PLUGINS[index];
+        PLUGINS[pluginSelect.value];
+
+    const value =
+        inputValue.value.trim();
+
+    if (!value) {{
+
+        showError("数値を入力してください。");
+
+        return;
+    }}
 
     if (!plugin) {{
 
-        showMessage(
-            "プラグインが見つかりません。"
-        );
+        showError("プラグインが選択されていません。");
 
         return;
     }}
 
-    calculateButton.disabled = true;
+    if (!pyodide) {{
 
-    copyButton.disabled = true;
+        showError("Pythonをまだ準備中です。");
 
-    resultElement.value = "";
+        return;
+    }}
 
-    showMessage(
-        "計算しています..."
+    calculateButton.disabled =
+        true;
+
+    copyButton.disabled =
+        true;
+
+    progressArea.style.display =
+        "block";
+
+    setProgress(
+        5,
+        "計算を開始しています..."
     );
 
     try {{
 
-        // Pythonプラグインを読み込む
+        await new Promise(
+            resolve => setTimeout(resolve, 50)
+        );
+
+        setProgress(
+            25,
+            plugin.name + "を実行しています..."
+        );
+
         await pyodide.runPythonAsync(
             plugin.source
         );
 
-        // Pythonのcalculate()を呼び出す
-        pyodide.globals.set(
-            "web_input",
-            input
+        setProgress(
+            55,
+            "計算しています..."
         );
 
-        const result =
+        pyodide.globals.set(
+            "web_input",
+            value
+        );
+
+        const output =
             await pyodide.runPythonAsync(`
 result = calculate(web_input)
 str(result)
 `);
 
-        resultElement.value =
-            result;
+        setProgress(
+            90,
+            "結果を表示しています..."
+        );
 
-        copyButton.disabled = false;
+        result.value =
+            output;
 
-        showMessage(
+        setProgress(
+            100,
             "計算完了"
         );
 
+        await new Promise(
+            resolve => setTimeout(resolve, 250)
+        );
+
+        progressArea.style.display =
+            "none";
+
+        copyButton.disabled =
+            false;
+
     }} catch (error) {{
 
-        console.error(error);
+        progressArea.style.display =
+            "none";
 
-        showMessage(
-            "計算エラー: " +
-            error.toString()
-        );
+        let message =
+            error?.message || String(error);
+
+        // Pyodideのエラー表示を少し整理
+        message =
+            message
+                .replace(/^PythonError:\\s*/i, "")
+                .replace(/Traceback[\\\\s\\\\S]*?ValueError:\\s*/i, "");
+
+        showError(message);
 
     }} finally {{
 
-        calculateButton.disabled = false;
-
+        calculateButton.disabled =
+            false;
     }}
-
 }}
 
 
 async function copyResult() {{
 
-    const text =
-        resultElement.value;
-
-    if (!text) {{
+    if (!result.value) {{
         return;
     }}
 
     try {{
 
         await navigator.clipboard.writeText(
-            text
+            result.value
         );
 
-        showMessage(
-            "結果をコピーしました。"
-        );
+        status.textContent =
+            "結果をコピーしました！";
 
-    }} catch (error) {{
+    }} catch {{
 
-        // 古いブラウザ向け
-        resultElement.focus();
-
-        resultElement.select();
+        result.select();
 
         document.execCommand("copy");
 
-        showMessage(
-            "結果をコピーしました。"
-        );
+        status.textContent =
+            "結果をコピーしました！";
     }}
-
 }}
 
+
+pluginSelect.addEventListener(
+    "change",
+    updateDescription
+);
 
 calculateButton.addEventListener(
     "click",
     calculate
 );
 
-
 copyButton.addEventListener(
     "click",
     copyResult
 );
 
-
-inputElement.addEventListener(
+inputValue.addEventListener(
     "keydown",
-    function(event) {{
+    event => {{
 
-        if (
-            event.key === "Enter"
-        ) {{
+        if (event.key === "Enter") {{
             calculate();
         }}
-
     }}
 );
 
 
+setupPlugins();
+
+calculateButton.disabled =
+    true;
+
+copyButton.disabled =
+    true;
+
 loadPython();
 """
 
-    path = os.path.join(
-        DOCS_DIR,
-        "app.js"
-    )
+
+def create_docs():
+    os.makedirs(DOCS_DIR, exist_ok=True)
+
+    plugins = load_plugins()
 
     with open(
-        path,
+        os.path.join(DOCS_DIR, "index.html"),
         "w",
         encoding="utf-8"
     ) as f:
+        f.write(create_html())
 
-        f.write(js)
+    with open(
+        os.path.join(DOCS_DIR, "style.css"),
+        "w",
+        encoding="utf-8"
+    ) as f:
+        f.write(create_css())
+
+    with open(
+        os.path.join(DOCS_DIR, "app.js"),
+        "w",
+        encoding="utf-8"
+    ) as f:
+        f.write(create_js(plugins))
+
+    print("Web版を生成しました。")
+    print(f"プラグイン数: {{len(plugins)}}")
+
+    for plugin in plugins:
+        print(
+            f"- {{plugin['name']}}: "
+            f"{{plugin['description']}}"
+        )
 
 
 if __name__ == "__main__":
-
     create_docs()

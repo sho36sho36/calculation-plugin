@@ -1,4 +1,5 @@
 PLUGIN_NAME = "素数"
+PLUGIN_DESCRIPTION = "指定した個数の素数を小さい順に求めます。"
 
 
 def calculate(value):
@@ -16,6 +17,7 @@ def calculate(value):
         for p in primes:
             if p * p > number:
                 break
+
             if number % p == 0:
                 is_prime = False
                 break

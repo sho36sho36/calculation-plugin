@@ -1,70 +1,59 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>Calculation Plugin</title>
 
-    <title>計算プラグイン</title>
-
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div class="container">
 
-    <h1>計算プラグイン</h1>
+    <h1>🧮 Calculation Plugin</h1>
 
-    <div id="status">
-        Pythonを読み込んでいます...
-    </div>
+    <div class="card">
 
-    <section>
+        <label for="pluginSelect">計算プラグイン</label>
 
-        <label for="plugin">
-            プラグイン
-        </label>
+        <select id="pluginSelect"></select>
 
-        <select id="plugin">
-        </select>
+        <div id="description" class="description"></div>
 
-    </section>
-
-    <section>
-
-        <label for="input">
-            数値
-        </label>
+        <label for="inputValue">数値</label>
 
         <input
-            id="input"
+            id="inputValue"
             type="text"
             inputmode="numeric"
             placeholder="数値を入力"
         >
 
-    </section>
+        <button id="calculateButton">
+            計算する
+        </button>
 
-    <button
-        id="calculate"
-        disabled
-    >
-        計算
-    </button>
+        <div id="progressArea" class="progress-area">
 
-    <section>
+            <div class="progress-text">
+                <span id="progressMessage">計算中...</span>
+                <span id="progressPercent">0%</span>
+            </div>
 
-        <label>
-            結果
-        </label>
+            <div class="progress-bar">
+                <div id="progressBar"></div>
+            </div>
+
+        </div>
+
+        <div id="errorArea" class="error-area">
+        </div>
+
+        <label for="result">結果</label>
 
         <textarea
             id="result"
@@ -72,21 +61,19 @@
             placeholder="ここに結果が表示されます"
         ></textarea>
 
-    </section>
+        <button id="copyButton" class="copy-button">
+            結果をコピー
+        </button>
 
-    <button
-        id="copy"
-        disabled
-    >
-        コピー
-    </button>
+        <div id="status" class="status">
+            Pythonを準備しています...
+        </div>
 
-    <div id="message"></div>
+    </div>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/pyodide/v0.28.2/full/pyodide.js"></script>
-
 <script src="app.js"></script>
 
 </body>
