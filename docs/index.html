@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>計算プラグイン</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>計算プラグイン</h1>
+
+    <div id="status">
+        Pythonを読み込んでいます...
+    </div>
+
+    <section>
+
+        <label for="plugin">
+            プラグイン
+        </label>
+
+        <select id="plugin">
+        </select>
+
+    </section>
+
+    <section>
+
+        <label for="input">
+            数値
+        </label>
+
+        <input
+            id="input"
+            type="text"
+            inputmode="numeric"
+            placeholder="数値を入力"
+        >
+
+    </section>
+
+    <button
+        id="calculate"
+        disabled
+    >
+        計算
+    </button>
+
+    <section>
+
+        <label>
+            結果
+        </label>
+
+        <textarea
+            id="result"
+            readonly
+            placeholder="ここに結果が表示されます"
+        ></textarea>
+
+    </section>
+
+    <button
+        id="copy"
+        disabled
+    >
+        コピー
+    </button>
+
+    <div id="message"></div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.28.2/full/pyodide.js"></script>
+
+<script src="app.js"></script>
+
+</body>
+</html>

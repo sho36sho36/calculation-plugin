@@ -3,7 +3,7 @@ import os
 import importlib
 import subprocess
 
-# 巨大な整数を文字列に変換するときの制限を解除
+# 巨大な整数を文字列へ変換するときの制限を解除
 sys.set_int_max_str_digits(0)
 
 PLUGIN_DIR = "plugins"
@@ -11,9 +11,11 @@ PLUGIN_DIR = "plugins"
 
 def load_plugins():
     """pluginsフォルダからプラグインを読み込む"""
+
     plugins = []
 
     for filename in os.listdir(PLUGIN_DIR):
+
         if not filename.endswith(".py"):
             continue
 
@@ -27,7 +29,10 @@ def load_plugins():
                 f"{PLUGIN_DIR}.{module_name}"
             )
 
-            if hasattr(module, "PLUGIN_NAME") and hasattr(module, "calculate"):
+            if (
+                hasattr(module, "PLUGIN_NAME")
+                and hasattr(module, "calculate")
+            ):
                 plugins.append(module)
 
         except Exception as e:
@@ -50,8 +55,11 @@ def select_plugin(plugins):
     print()
 
     while True:
+
         try:
-            choice = int(input("プラグインを選択してください > "))
+            choice = int(
+                input("プラグインを選択してください > ")
+            )
 
             if 1 <= choice <= len(plugins):
                 return plugins[choice - 1]
@@ -64,6 +72,7 @@ def select_plugin(plugins):
 
 def copy_to_clipboard(text):
     """Windowsのクリップボードへコピー"""
+
     process = subprocess.Popen(
         ["clip"],
         stdin=subprocess.PIPE,
@@ -74,6 +83,7 @@ def copy_to_clipboard(text):
 
 
 def main():
+
     plugins = load_plugins()
 
     if not plugins:
@@ -89,6 +99,7 @@ def main():
     value = input("数値を入力してください > ")
 
     try:
+
         result = plugin.calculate(value)
 
         print()
@@ -102,10 +113,15 @@ def main():
         command = input("> ").strip().lower()
 
         if command == "c":
+
             copy_to_clipboard(str(result))
-            print("結果をクリップボードにコピーしました。")
+
+            print(
+                "結果をクリップボードにコピーしました。"
+            )
 
     except Exception as e:
+
         print()
         print("計算エラー:")
         print(e)
