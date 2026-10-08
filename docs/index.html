@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Calculation Plugin - 数学計算プラグイン"
+    >
 
     <title>Calculation Plugin</title>
 
     <link rel="stylesheet" href="style.css">
+
 </head>
+
 
 <body>
 
@@ -16,44 +28,113 @@
 
     <h1>🧮 Calculation Plugin</h1>
 
+
     <div class="card">
 
-        <label for="pluginSelect">計算プラグイン</label>
 
-        <select id="pluginSelect"></select>
+        <!-- ============================= -->
+        <!-- プラグイン選択 -->
+        <!-- ============================= -->
 
-        <div id="description" class="description"></div>
+        <label for="pluginSelect">
+            計算プラグイン
+        </label>
 
-        <label for="inputValue">数値</label>
+        <select id="pluginSelect">
+        </select>
+
+
+        <!-- ============================= -->
+        <!-- プラグイン説明 -->
+        <!-- ============================= -->
+
+        <div
+            id="description"
+            class="description"
+        >
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- 数値入力 -->
+        <!-- ============================= -->
+
+        <label for="inputValue">
+            数値
+        </label>
 
         <input
             id="inputValue"
             type="text"
             inputmode="numeric"
+            autocomplete="off"
             placeholder="数値を入力"
         >
 
-        <button id="calculateButton">
+
+        <!-- ============================= -->
+        <!-- 計算ボタン -->
+        <!-- ============================= -->
+
+        <button
+            id="calculateButton"
+            disabled
+        >
             計算する
         </button>
 
-        <div id="progressArea" class="progress-area">
+
+        <!-- ============================= -->
+        <!-- プログレスバー -->
+        <!-- ============================= -->
+
+        <div
+            id="progressArea"
+            class="progress-area"
+        >
 
             <div class="progress-text">
-                <span id="progressMessage">計算中...</span>
-                <span id="progressPercent">0%</span>
+
+                <span id="progressMessage">
+                    計算中...
+                </span>
+
+                <span id="progressPercent">
+                    0%
+                </span>
+
             </div>
+
 
             <div class="progress-bar">
-                <div id="progressBar"></div>
+
+                <div
+                    id="progressBar"
+                ></div>
+
             </div>
 
         </div>
 
-        <div id="errorArea" class="error-area">
+
+        <!-- ============================= -->
+        <!-- エラー -->
+        <!-- ============================= -->
+
+        <div
+            id="errorArea"
+            class="error-area"
+        >
         </div>
 
-        <label for="result">結果</label>
+
+        <!-- ============================= -->
+        <!-- 結果 -->
+        <!-- ============================= -->
+
+        <label for="result">
+            結果
+        </label>
 
         <textarea
             id="result"
@@ -61,20 +142,49 @@
             placeholder="ここに結果が表示されます"
         ></textarea>
 
-        <button id="copyButton" class="copy-button">
+
+        <!-- ============================= -->
+        <!-- コピー -->
+        <!-- ============================= -->
+
+        <button
+            id="copyButton"
+            class="copy-button"
+            disabled
+        >
             結果をコピー
         </button>
 
-        <div id="status" class="status">
+
+        <!-- ============================= -->
+        <!-- ステータス -->
+        <!-- ============================= -->
+
+        <div
+            id="status"
+            class="status"
+        >
             Pythonを準備しています...
         </div>
+
 
     </div>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/pyodide/v0.28.2/full/pyodide.js"></script>
+
+<!-- ============================= -->
+<!-- Pyodide -->
+<!-- ============================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/pyodide/v0.28.2/full/pyodide.js"
+></script>
+
+
 <script src="app.js"></script>
 
+
 </body>
+
 </html>

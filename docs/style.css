@@ -1,71 +1,144 @@
 
+/* =========================================
+   基本
+========================================= */
+
 * {
     box-sizing: border-box;
 }
 
+
 body {
+
     margin: 0;
+
     padding: 20px;
 
     font-family:
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
+        "Noto Sans JP",
         sans-serif;
 
     background: #f4f6f8;
+
     color: #222;
 }
 
+
+/* =========================================
+   コンテナ
+========================================= */
+
 .container {
+
     width: 100%;
+
     max-width: 700px;
+
     margin: 0 auto;
 }
 
+
+/* =========================================
+   タイトル
+========================================= */
+
 h1 {
+
     text-align: center;
+
+    margin-top: 10px;
+
     margin-bottom: 25px;
+
+    font-size: 30px;
 }
 
+
+/* =========================================
+   カード
+========================================= */
+
 .card {
+
     background: white;
+
     padding: 25px;
+
     border-radius: 18px;
 
     box-shadow:
         0 5px 20px rgba(0, 0, 0, 0.08);
 }
 
+
+/* =========================================
+   ラベル
+========================================= */
+
 label {
+
     display: block;
+
     font-weight: bold;
+
     margin-top: 18px;
+
     margin-bottom: 8px;
 }
+
+
+/* =========================================
+   入力
+========================================= */
 
 select,
 input,
 textarea {
+
     width: 100%;
 
     padding: 13px;
 
     border: 1px solid #ccc;
+
     border-radius: 10px;
 
     font-size: 16px;
 
     background: white;
+
+    color: #222;
 }
+
 
 select,
 input {
+
     min-height: 48px;
 }
 
+
+input:focus,
+select:focus,
+textarea:focus {
+
+    outline: none;
+
+    border-color: #777;
+}
+
+
+/* =========================================
+   説明
+========================================= */
+
 .description {
+
     margin-top: 10px;
+
     padding: 12px;
 
     border-radius: 10px;
@@ -75,9 +148,17 @@ input {
     color: #555;
 
     line-height: 1.6;
+
+    min-height: 24px;
 }
 
+
+/* =========================================
+   ボタン
+========================================= */
+
 button {
+
     width: 100%;
 
     min-height: 50px;
@@ -85,50 +166,104 @@ button {
     margin-top: 18px;
 
     border: none;
+
     border-radius: 10px;
 
     font-size: 17px;
+
     font-weight: bold;
 
     cursor: pointer;
 
     background: #222;
+
     color: white;
+
+    transition:
+        opacity 0.2s,
+        transform 0.1s;
 }
 
+
+button:hover:not(:disabled) {
+
+    opacity: 0.85;
+}
+
+
+button:active:not(:disabled) {
+
+    transform: scale(0.99);
+}
+
+
 button:disabled {
+
     opacity: 0.5;
+
     cursor: not-allowed;
 }
 
+
+/* =========================================
+   コピー
+========================================= */
+
 .copy-button {
+
     background: #555;
 }
 
+
+/* =========================================
+   結果
+========================================= */
+
 textarea {
-    min-height: 160px;
+
+    min-height: 180px;
+
     resize: vertical;
 
-    font-family: monospace;
+    font-family:
+        Consolas,
+        "Courier New",
+        monospace;
+
+    line-height: 1.5;
 }
 
+
+/* =========================================
+   プログレス
+========================================= */
+
 .progress-area {
+
     display: none;
 
     margin-top: 20px;
 }
 
+
 .progress-text {
+
     display: flex;
+
     justify-content: space-between;
+
+    align-items: center;
 
     margin-bottom: 7px;
 
     font-size: 14px;
 }
 
+
 .progress-bar {
+
     width: 100%;
+
     height: 18px;
 
     background: #ddd;
@@ -138,16 +273,54 @@ textarea {
     overflow: hidden;
 }
 
+
 #progressBar {
+
     width: 0%;
+
     height: 100%;
 
     background: #222;
 
     transition: width 0.15s;
+
+    border-radius: 999px;
 }
 
+
+/* =========================================
+   計算中アニメーション
+========================================= */
+
+#progressBar.indeterminate {
+
+    width: 40%;
+
+    animation:
+        progressMove 1.2s infinite;
+}
+
+
+@keyframes progressMove {
+
+    0% {
+
+        transform: translateX(-120%);
+    }
+
+    100% {
+
+        transform: translateX(350%);
+    }
+}
+
+
+/* =========================================
+   エラー
+========================================= */
+
 .error-area {
+
     display: none;
 
     margin-top: 18px;
@@ -163,9 +336,17 @@ textarea {
     color: #c00000;
 
     white-space: pre-wrap;
+
+    line-height: 1.5;
 }
 
+
+/* =========================================
+   ステータス
+========================================= */
+
 .status {
+
     margin-top: 15px;
 
     text-align: center;
@@ -175,22 +356,117 @@ textarea {
     font-size: 14px;
 }
 
+
+/* =========================================
+   スマホ
+========================================= */
+
 @media (max-width: 600px) {
 
     body {
+
         padding: 10px;
     }
 
+
+    .container {
+
+        width: 100%;
+    }
+
+
+    h1 {
+
+        font-size: 24px;
+
+        margin-top: 5px;
+
+        margin-bottom: 18px;
+    }
+
+
     .card {
+
         padding: 18px;
+
         border-radius: 14px;
     }
 
-    h1 {
-        font-size: 24px;
+
+    button {
+
+        min-height: 52px;
+
+        font-size: 17px;
     }
 
+
+    input,
+    select {
+
+        min-height: 50px;
+
+        font-size: 16px;
+    }
+
+
     textarea {
-        min-height: 180px;
+
+        min-height: 200px;
+
+        font-size: 14px;
+    }
+}
+
+
+/* =========================================
+   ダークモード
+========================================= */
+
+@media (prefers-color-scheme: dark) {
+
+    body {
+
+        background: #151515;
+
+        color: #eee;
+    }
+
+
+    .card {
+
+        background: #222;
+    }
+
+
+    select,
+    input,
+    textarea {
+
+        background: #2c2c2c;
+
+        color: #eee;
+
+        border-color: #555;
+    }
+
+
+    .description {
+
+        background: #2d3236;
+
+        color: #ccc;
+    }
+
+
+    .progress-bar {
+
+        background: #444;
+    }
+
+
+    .status {
+
+        color: #aaa;
     }
 }
